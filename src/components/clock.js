@@ -1,46 +1,30 @@
 import React from 'react';
+import { getClockTime } from './lib'
 
 class Clock extends React.Component {
 
-    state = {
-        hours: '',
-        minutes: '',
-        seconds: '',
-        timeOfDay: '',
-        clockref: ''
+    constructor() {
+        super()
+        this.state = getClockTime()
     }
 
-    numToDay = [
-        '일', '월', '화', '수', '목', '금', '토'
-    ]
-
-    componentDidMount = () => {
-        const ref = setInterval(() => {
-            const timer = new Date();
-            console.log("timer : ", timer);
-            this.setState({
-                hours: timer.getHours(),
-                minutes: timer.getMinutes(),
-                seconds: timer.getSeconds(),
-                timeOfDay: this.numToDay[timer.getDay()],
-                clockref: ref
-            });
-        }, 1000)
+    componentDidMount() {
+        console.log("componentDidMount() called!");
+        
+        this.ticking = setInterval(() =>
+                this.setState(getClockTime())
+            , 1000)
     }
 
-    
-    unmountComponentAtNode = () => {
-        console.log("unmountComponentAtNode() called!");
-        //const dummyRef = this.state.ref;
-        this.setState(
-            this.state.clockref.clearInterval
-        )
+    componentWillUnmount() {
+        console.log("componentwillUnmount() called!");
+        clearInterval(this.ticking)
+        
     }
-    
 
     render() {
-        const {hours, minutes, seconds, timeOfDay, clockref} = this.state;
-        
+        console.log("render() called!");
+        const { hours, minutes, seconds, timeOfDay } = this.state
         return (
             <div className="clock">
                 <span>{hours}</span>
@@ -49,10 +33,11 @@ class Clock extends React.Component {
                 <span>:</span>
                 <span>{seconds}</span>
                 <span>{timeOfDay}</span>
-                <button onClick={this.unmountComponentAtNode}>닫기</button>
+                <button onClick={this.props.onClose}>x</button>
             </div>
-        );
+        )
     }
+
 }
 
 export default Clock;
